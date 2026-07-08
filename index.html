@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fretwork — Chords, Scales & Key Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a1410;--wood:#2b1d12;--rosewood:#3d2817;--cream:#f3e9d8;--parch:#ece0c8;
+    --amber:#e0892f;--amber-bright:#f5a742;--brass:#c9a24b;--copper:#b5632a;--string:#d8c9a8;
+    --line:rgba(43,29,18,.14);--shadow:rgba(26,20,16,.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;
+    background-image:repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(43,29,18,.012) 2px,rgba(43,29,18,.012) 3px);}
+  ::selection{background:var(--amber);color:var(--wood)}
+  header{position:sticky;top:0;z-index:50;background:var(--wood);border-bottom:3px solid var(--brass);box-shadow:0 4px 20px var(--shadow);}
+  .bar{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;}
+  .brand{display:flex;align-items:baseline;gap:10px;color:var(--cream)}
+  .brand b{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.02em;}
+  .brand b em{color:var(--amber-bright);font-style:normal}
+  .brand span{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--brass);letter-spacing:.15em;text-transform:uppercase}
+  nav{display:flex;gap:4px;flex-wrap:wrap}
+  nav button{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    background:transparent;border:1px solid transparent;color:var(--string);padding:8px 14px;border-radius:7px;cursor:pointer;transition:.18s;}
+  nav button:hover{color:var(--amber-bright)}
+  nav button.on{background:var(--amber);color:var(--wood);border-color:var(--amber-bright)}
+  main{max-width:1080px;margin:0 auto;padding:0 24px 90px}
+  .hero{padding:54px 0 30px;border-bottom:1px solid var(--line);position:relative}
+  .hero h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(38px,7vw,76px);line-height:.96;letter-spacing:-.03em;max-width:14ch;}
+  .hero h1 mark{background:none;color:var(--copper)}
+  .hero p{margin-top:18px;max-width:48ch;font-size:17px;color:var(--rosewood)}
+  .strings{display:flex;flex-direction:column;gap:7px;margin-top:30px;max-width:420px}
+  .strings .s{height:2px;background:linear-gradient(90deg,var(--brass),transparent);border-radius:2px}
+  .strings .s:nth-child(1){height:1px}.strings .s:nth-child(2){height:1px}
+  .strings .s:nth-child(5){height:3px}.strings .s:nth-child(6){height:4px}
+  .view{display:none;padding-top:34px;animation:fade .4s ease}
+  .view.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  h2.sec{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:30px;letter-spacing:-.02em;margin-bottom:6px;}
+  .sub{color:var(--rosewood);margin-bottom:26px;max-width:62ch}
+  .sub code{font-family:'JetBrains Mono',monospace;background:var(--parch);padding:1px 6px;border-radius:5px;font-size:.9em}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--copper);margin-bottom:8px}
+  .picker{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;align-items:center}
+  .chip{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;background:var(--parch);border:1px solid var(--line);
+    color:var(--rosewood);padding:9px 15px;border-radius:9px;cursor:pointer;transition:.15s;}
+  .chip:hover{border-color:var(--amber);color:var(--ink)}
+  .chip.on{background:var(--wood);color:var(--amber-bright);border-color:var(--wood)}
+  .label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--copper);margin-right:6px;font-weight:700}
+  select{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;background:var(--parch);border:1px solid var(--line);color:var(--ink);padding:10px 12px;border-radius:9px;}
+  select:focus{outline:2px solid var(--amber);outline-offset:1px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:16px}
+  .card{background:var(--parch);border:1px solid var(--line);border-radius:14px;padding:16px 14px 18px;box-shadow:0 2px 0 var(--line);transition:.18s;}
+  .card:hover{transform:translateY(-3px);box-shadow:0 10px 24px var(--shadow);border-color:var(--amber)}
+  .card h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;display:flex;align-items:baseline;gap:6px;margin-bottom:2px}
+  .card h3 small{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--copper)}
+  .card .vlabel{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--rosewood);margin-bottom:8px;letter-spacing:.03em}
+  .card .notes{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--copper);margin-top:8px}
+  svg.diag{display:block;width:100%;height:auto}
+  .fbwrap{background:var(--rosewood);border-radius:16px;padding:22px 18px;overflow-x:auto;box-shadow:inset 0 2px 14px rgba(0,0,0,.3)}
+  .boardblock{margin-bottom:26px}
+  .boardhd{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:var(--rosewood);margin-bottom:10px;display:flex;align-items:baseline;gap:10px}
+  .boardhd span{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--copper);letter-spacing:.04em}
+  table.fb{border-collapse:collapse;width:100%;min-width:640px}
+  table.fb td,table.fb th{text-align:center;position:relative}
+  table.fb th{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--brass);padding-bottom:8px;font-weight:700}
+  .strlabel{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--string);font-weight:700;padding-right:12px;text-align:right!important;width:34px}
+  .fret{height:46px;border-left:2px solid #6b4a2c;background:linear-gradient(180deg,#4a3220,#3d2817)}
+  .fret.nut{border-left:6px solid var(--string)}
+  .strline{position:absolute;left:0;right:0;top:50%;height:1px;background:#8a6a45;z-index:0}
+  .dot{position:relative;z-index:2;width:30px;height:30px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px}
+  .dot.note{background:var(--amber);color:var(--wood);box-shadow:0 2px 6px rgba(0,0,0,.4)}
+  .dot.root{background:var(--copper);color:var(--cream);box-shadow:0 0 0 2px var(--amber-bright)}
+  .dot.dim{opacity:.28}
+  .marker{position:absolute;top:-13px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:9px;color:#6b4a2c}
+  .scaleinfo{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .pill{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--parch);border:1px solid var(--line);padding:7px 12px;border-radius:8px}
+  .pill b{color:var(--copper)}
+  /* transpose builder */
+  .tpgrid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:720px){.tpgrid{grid-template-columns:1fr}}
+  .panel{background:var(--parch);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .panel label{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--copper);font-weight:700;margin-bottom:8px}
+  .keyrow{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin:22px 0}
+  .keyrow .field{display:flex;flex-direction:column;gap:6px}
+  .arrow{font-size:26px;color:var(--copper);padding-bottom:4px}
+  .builder{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-height:54px;background:var(--cream);border:1px dashed var(--line);border-radius:10px;padding:12px;margin-bottom:6px}
+  .builder:empty::before{content:'Click chords below to build your progression…';color:var(--rosewood);font-size:13px;font-family:Inter}
+  .seq{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;background:var(--wood);color:var(--amber-bright);padding:6px 10px;border-radius:8px;display:inline-flex;align-items:center;gap:7px}
+  .seq button{background:none;border:none;color:var(--brass);cursor:pointer;font-size:14px;line-height:1;padding:0}
+  .seq button:hover{color:#fff}
+  .palette{margin-top:14px}
+  .palette .row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center}
+  .palette .rl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--copper);width:48px;font-weight:700;text-transform:uppercase}
+  .pchip{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;background:var(--parch);border:1px solid var(--line);color:var(--ink);padding:7px 11px;border-radius:8px;cursor:pointer;transition:.12s}
+  .pchip:hover{background:var(--amber);border-color:var(--amber);color:var(--wood);transform:translateY(-1px)}
+  .toolbtn{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;background:transparent;border:1px solid var(--copper);color:var(--copper);padding:6px 12px;border-radius:8px;cursor:pointer}
+  .toolbtn:hover{background:var(--copper);color:var(--cream)}
+  .out{font-family:'JetBrains Mono',monospace;font-size:18px;line-height:2.1;color:var(--ink);min-height:70px}
+  .out .ch{background:var(--wood);color:var(--amber-bright);padding:3px 10px;border-radius:7px;display:inline-block;margin:3px;font-weight:700}
+  .semi{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--rosewood);margin-top:12px}
+  .capo{margin:0 0 22px;background:var(--parch);border:1px solid var(--line);border-left:4px solid var(--copper);
+    border-radius:0 12px 12px 0;padding:14px 16px;font-size:14px;line-height:1.55;color:var(--ink);max-width:640px}
+  .capo:empty{display:none}
+  .capo b{color:var(--copper)}
+  .capo .caphd{display:block;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;letter-spacing:-.01em;
+    color:var(--copper);margin-bottom:5px;text-transform:none}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding-top:24px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--rosewood);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand"><b>Fret<em>&middot;</em>work</b><span>chords &middot; scales &middot; keys</span></div>
+    <nav>
+      <button class="on" data-v="chords">Chords</button>
+      <button data-v="scales">Scales</button>
+      <button data-v="transpose">Key Tool</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Everything under your <mark>fingers</mark>, before you play.</h1>
+    <p>A workbench for guitarists: look up every shape of a chord across the neck, walk scales position by position, and transpose a whole progression into a new key with a click.</p>
+    <div class="strings"><div class="s"></div><div class="s"></div><div class="s"></div><div class="s"></div><div class="s"></div><div class="s"></div></div>
+  </section>
+
+  <section class="view on" id="chords">
+    <div class="eyebrow">Chord library</div>
+    <h2 class="sec">Find a chord &mdash; everywhere it lives</h2>
+    <p class="sub">Pick a root and type. Each card is a different position on the neck. Diagrams read top&ndash;to&ndash;bottom as frets and left&ndash;to&ndash;right as strings (low E &rarr; high E). The number beside the grid is the starting fret; <b>&times;</b> = mute, <b>&cir;</b> = open.</p>
+    <div class="picker" id="chordRoots"></div>
+    <div class="picker" id="chordTypes"></div>
+    <div class="grid" id="chordGrid"></div>
+  </section>
+
+  <section class="view" id="scales">
+    <div class="eyebrow">Scale library</div>
+    <h2 class="sec">The whole scale, then position by position</h2>
+    <p class="sub">Choose a root and scale. You get the whole neck first, then every position laid out below it &mdash; ordered from the one closest to the nut on up. <span style="color:var(--copper);font-weight:600">Root notes</span> are highlighted.</p>
+    <div class="picker">
+      <span class="label">Root</span><select id="scaleRoot"></select>
+      <span class="label" style="margin-left:10px">Scale</span>
+      <select id="scaleType">
+        <option value="major">Major (Ionian)</option>
+        <option value="naturalMinor">Natural Minor (Aeolian)</option>
+        <option value="majorPent">Major Pentatonic</option>
+        <option value="minorPent">Minor Pentatonic</option>
+      </select>
+    </div>
+    <div id="fretboard"></div>
+    <div class="scaleinfo" id="scaleInfo"></div>
+  </section>
+
+  <section class="view" id="transpose">
+    <div class="eyebrow">Key conversion</div>
+    <h2 class="sec">Transpose a progression</h2>
+    <p class="sub">Pick the original and target key &mdash; the capo position shows straight away. Build a progression below by clicking chords (no typing) to see every chord transposed too.</p>
+    <div class="keyrow">
+      <div class="field"><label>From key</label><select id="fromKey"></select></div>
+      <div class="arrow">&rarr;</div>
+      <div class="field"><label>To key</label><select id="toKey"></select></div>
+      <div class="field"><label>Accidentals</label><select id="accidental">
+        <option value="auto">Auto (match key)</option><option value="sharp">Sharps &sharp;</option><option value="flat">Flats &flat;</option>
+      </select></div>
+    </div>
+    <div class="capo" id="tpCapo"></div>
+    <div class="tpgrid">
+      <div class="panel">
+        <label>Your progression &mdash; click to add</label>
+        <div class="builder" id="builder"></div>
+        <div style="display:flex;gap:8px;margin:10px 0 4px"><button class="toolbtn" id="undoBtn">&larr; Remove last</button><button class="toolbtn" id="clearBtn">Clear all</button></div>
+        <div class="palette" id="palette"></div>
+      </div>
+      <div class="panel">
+        <label>Transposed</label>
+        <div class="out" id="tpOut"></div>
+        <div class="semi" id="tpSemi"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer><span>FRETWORK &mdash; a practice-room tool</span><span>Standard tuning E A D G B E</span></footer>
+</main>
+
+<script>
+const NOTES_S=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const NOTES_F=['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+const ROOTS=['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
+const idx={'C':0,'C#':1,'Db':1,'D':2,'D#':3,'Eb':3,'E':4,'F':5,'F#':6,'Gb':6,'G':7,'G#':8,'Ab':8,'A':9,'A#':10,'Bb':10,'B':11};
+const TUNING=[4,9,2,7,11,4];
+
+const CHORD_LIB={"C":{"7":[{"frets":[8,10,8,9,8,8],"label":"E-shape barre · 8fr"},{"frets":[-1,3,5,3,5,3],"label":"A-shape barre · 3fr"}],"maj":[{"frets":[-1,3,2,0,1,0],"label":"Open / common"},{"frets":[8,10,10,9,8,8],"label":"E-shape barre · 8fr"},{"frets":[-1,3,5,5,5,3],"label":"A-shape barre · 3fr"}],"min":[{"frets":[-1,3,5,5,4,3],"label":"Open / common"},{"frets":[8,10,10,8,8,8],"label":"E-shape barre · 8fr"}],"maj7":[{"frets":[-1,3,2,0,0,0],"label":"Open / common"},{"frets":[8,10,9,9,8,8],"label":"E-shape barre · 8fr"},{"frets":[-1,3,5,4,5,3],"label":"A-shape barre · 3fr"}],"m7":[{"frets":[-1,3,5,3,4,3],"label":"Open / common"},{"frets":[8,10,8,8,8,8],"label":"E-shape barre · 8fr"}]},"C#":{"7":[{"frets":[9,11,9,10,9,9],"label":"E-shape barre · 9fr"},{"frets":[-1,4,6,4,6,4],"label":"A-shape barre · 4fr"}],"maj":[{"frets":[9,11,11,10,9,9],"label":"E-shape barre · 9fr"},{"frets":[-1,4,6,6,6,4],"label":"A-shape barre · 4fr"}],"min":[{"frets":[9,11,11,9,9,9],"label":"E-shape barre · 9fr"},{"frets":[-1,4,6,6,5,4],"label":"A-shape barre · 4fr"}],"maj7":[{"frets":[9,11,10,10,9,9],"label":"E-shape barre · 9fr"},{"frets":[-1,4,6,5,6,4],"label":"A-shape barre · 4fr"}],"m7":[{"frets":[9,11,9,9,9,9],"label":"E-shape barre · 9fr"},{"frets":[-1,4,6,4,5,4],"label":"A-shape barre · 4fr"}]},"D":{"7":[{"frets":[-1,-1,0,2,1,2],"label":"Open / common"},{"frets":[10,12,10,11,10,10],"label":"E-shape barre · 10fr"},{"frets":[-1,5,7,5,7,5],"label":"A-shape barre · 5fr"}],"maj":[{"frets":[-1,-1,0,2,3,2],"label":"Open / common"},{"frets":[10,12,12,11,10,10],"label":"E-shape barre · 10fr"},{"frets":[-1,5,7,7,7,5],"label":"A-shape barre · 5fr"}],"min":[{"frets":[-1,-1,0,2,3,1],"label":"Open / common"},{"frets":[10,12,12,10,10,10],"label":"E-shape barre · 10fr"},{"frets":[-1,5,7,7,6,5],"label":"A-shape barre · 5fr"}],"maj7":[{"frets":[-1,-1,0,2,2,2],"label":"Open / common"},{"frets":[10,12,11,11,10,10],"label":"E-shape barre · 10fr"},{"frets":[-1,5,7,6,7,5],"label":"A-shape barre · 5fr"}],"m7":[{"frets":[-1,-1,0,2,1,1],"label":"Open / common"},{"frets":[10,12,10,10,10,10],"label":"E-shape barre · 10fr"},{"frets":[-1,5,7,5,6,5],"label":"A-shape barre · 5fr"}]},"Eb":{"7":[{"frets":[11,13,11,12,11,11],"label":"E-shape barre · 11fr"},{"frets":[-1,6,8,6,8,6],"label":"A-shape barre · 6fr"}],"maj":[{"frets":[11,13,13,12,11,11],"label":"E-shape barre · 11fr"},{"frets":[-1,6,8,8,8,6],"label":"A-shape barre · 6fr"}],"min":[{"frets":[11,13,13,11,11,11],"label":"E-shape barre · 11fr"},{"frets":[-1,6,8,8,7,6],"label":"A-shape barre · 6fr"}],"maj7":[{"frets":[11,13,12,12,11,11],"label":"E-shape barre · 11fr"},{"frets":[-1,6,8,7,8,6],"label":"A-shape barre · 6fr"}],"m7":[{"frets":[11,13,11,11,11,11],"label":"E-shape barre · 11fr"},{"frets":[-1,6,8,6,7,6],"label":"A-shape barre · 6fr"}]},"E":{"7":[{"frets":[0,2,0,1,0,0],"label":"Open / common"},{"frets":[12,14,12,13,12,12],"label":"E-shape barre · 12fr"},{"frets":[-1,7,9,7,9,7],"label":"A-shape barre · 7fr"}],"maj":[{"frets":[0,2,2,1,0,0],"label":"Open / common"},{"frets":[12,14,14,13,12,12],"label":"E-shape barre · 12fr"},{"frets":[-1,7,9,9,9,7],"label":"A-shape barre · 7fr"}],"min":[{"frets":[0,2,2,0,0,0],"label":"Open / common"},{"frets":[12,14,14,12,12,12],"label":"E-shape barre · 12fr"},{"frets":[-1,7,9,9,8,7],"label":"A-shape barre · 7fr"}],"maj7":[{"frets":[0,2,1,1,0,0],"label":"Open / common"},{"frets":[12,14,13,13,12,12],"label":"E-shape barre · 12fr"},{"frets":[-1,7,9,8,9,7],"label":"A-shape barre · 7fr"}],"m7":[{"frets":[0,2,0,0,0,0],"label":"Open / common"},{"frets":[12,14,12,12,12,12],"label":"E-shape barre · 12fr"},{"frets":[-1,7,9,7,8,7],"label":"A-shape barre · 7fr"}]},"F":{"7":[{"frets":[1,3,1,2,1,1],"label":"Open / common"},{"frets":[-1,8,10,8,10,8],"label":"A-shape barre · 8fr"}],"maj":[{"frets":[1,3,3,2,1,1],"label":"Open / common"},{"frets":[-1,8,10,10,10,8],"label":"A-shape barre · 8fr"}],"min":[{"frets":[1,3,3,1,1,1],"label":"Open / common"},{"frets":[-1,8,10,10,9,8],"label":"A-shape barre · 8fr"}],"maj7":[{"frets":[-1,-1,3,2,1,0],"label":"Open / common"},{"frets":[1,3,2,2,1,1],"label":"E-shape barre · 1fr"},{"frets":[-1,8,10,9,10,8],"label":"A-shape barre · 8fr"}],"m7":[{"frets":[1,3,1,1,1,1],"label":"Open / common"},{"frets":[-1,8,10,8,9,8],"label":"A-shape barre · 8fr"}]},"F#":{"7":[{"frets":[2,4,2,3,2,2],"label":"E-shape barre · 2fr"},{"frets":[-1,9,11,9,11,9],"label":"A-shape barre · 9fr"}],"maj":[{"frets":[2,4,4,3,2,2],"label":"E-shape barre · 2fr"},{"frets":[-1,9,11,11,11,9],"label":"A-shape barre · 9fr"}],"min":[{"frets":[2,4,4,2,2,2],"label":"E-shape barre · 2fr"},{"frets":[-1,9,11,11,10,9],"label":"A-shape barre · 9fr"}],"maj7":[{"frets":[2,4,3,3,2,2],"label":"E-shape barre · 2fr"},{"frets":[-1,9,11,10,11,9],"label":"A-shape barre · 9fr"}],"m7":[{"frets":[2,4,2,2,2,2],"label":"E-shape barre · 2fr"},{"frets":[-1,9,11,9,10,9],"label":"A-shape barre · 9fr"}]},"G":{"7":[{"frets":[3,2,0,0,0,1],"label":"Open / common"},{"frets":[3,5,3,4,3,3],"label":"E-shape barre · 3fr"},{"frets":[-1,10,12,10,12,10],"label":"A-shape barre · 10fr"}],"maj":[{"frets":[3,2,0,0,0,3],"label":"Open / common"},{"frets":[3,5,5,4,3,3],"label":"E-shape barre · 3fr"},{"frets":[-1,10,12,12,12,10],"label":"A-shape barre · 10fr"}],"min":[{"frets":[3,5,5,3,3,3],"label":"Open / common"},{"frets":[-1,10,12,12,11,10],"label":"A-shape barre · 10fr"}],"maj7":[{"frets":[3,2,0,0,0,2],"label":"Open / common"},{"frets":[3,5,4,4,3,3],"label":"E-shape barre · 3fr"},{"frets":[-1,10,12,11,12,10],"label":"A-shape barre · 10fr"}],"m7":[{"frets":[3,5,3,3,3,3],"label":"Open / common"},{"frets":[-1,10,12,10,11,10],"label":"A-shape barre · 10fr"}]},"Ab":{"7":[{"frets":[4,6,4,5,4,4],"label":"E-shape barre · 4fr"},{"frets":[-1,11,13,11,13,11],"label":"A-shape barre · 11fr"}],"maj":[{"frets":[4,6,6,5,4,4],"label":"E-shape barre · 4fr"},{"frets":[-1,11,13,13,13,11],"label":"A-shape barre · 11fr"}],"min":[{"frets":[4,6,6,4,4,4],"label":"E-shape barre · 4fr"},{"frets":[-1,11,13,13,12,11],"label":"A-shape barre · 11fr"}],"maj7":[{"frets":[4,6,5,5,4,4],"label":"E-shape barre · 4fr"},{"frets":[-1,11,13,12,13,11],"label":"A-shape barre · 11fr"}],"m7":[{"frets":[4,6,4,4,4,4],"label":"E-shape barre · 4fr"},{"frets":[-1,11,13,11,12,11],"label":"A-shape barre · 11fr"}]},"A":{"7":[{"frets":[-1,0,2,0,2,0],"label":"Open / common"},{"frets":[5,7,5,6,5,5],"label":"E-shape barre · 5fr"},{"frets":[-1,12,14,12,14,12],"label":"A-shape barre · 12fr"}],"maj":[{"frets":[-1,0,2,2,2,0],"label":"Open / common"},{"frets":[5,7,7,6,5,5],"label":"E-shape barre · 5fr"},{"frets":[-1,12,14,14,14,12],"label":"A-shape barre · 12fr"}],"min":[{"frets":[-1,0,2,2,1,0],"label":"Open / common"},{"frets":[5,7,7,5,5,5],"label":"E-shape barre · 5fr"},{"frets":[-1,12,14,14,13,12],"label":"A-shape barre · 12fr"}],"maj7":[{"frets":[-1,0,2,1,2,0],"label":"Open / common"},{"frets":[5,7,6,6,5,5],"label":"E-shape barre · 5fr"},{"frets":[-1,12,14,13,14,12],"label":"A-shape barre · 12fr"}],"m7":[{"frets":[-1,0,2,0,1,0],"label":"Open / common"},{"frets":[5,7,5,5,5,5],"label":"E-shape barre · 5fr"},{"frets":[-1,12,14,12,13,12],"label":"A-shape barre · 12fr"}]},"Bb":{"7":[{"frets":[6,8,6,7,6,6],"label":"E-shape barre · 6fr"},{"frets":[-1,1,3,1,3,1],"label":"A-shape barre · 1fr"}],"maj":[{"frets":[6,8,8,7,6,6],"label":"E-shape barre · 6fr"},{"frets":[-1,1,3,3,3,1],"label":"A-shape barre · 1fr"}],"min":[{"frets":[6,8,8,6,6,6],"label":"E-shape barre · 6fr"},{"frets":[-1,1,3,3,2,1],"label":"A-shape barre · 1fr"}],"maj7":[{"frets":[6,8,7,7,6,6],"label":"E-shape barre · 6fr"},{"frets":[-1,1,3,2,3,1],"label":"A-shape barre · 1fr"}],"m7":[{"frets":[6,8,6,6,6,6],"label":"E-shape barre · 6fr"},{"frets":[-1,1,3,1,2,1],"label":"A-shape barre · 1fr"}]},"B":{"7":[{"frets":[-1,2,1,2,0,2],"label":"Open / common"},{"frets":[7,9,7,8,7,7],"label":"E-shape barre · 7fr"},{"frets":[-1,2,4,2,4,2],"label":"A-shape barre · 2fr"}],"maj":[{"frets":[-1,2,4,4,4,2],"label":"Open / common"},{"frets":[7,9,9,8,7,7],"label":"E-shape barre · 7fr"}],"min":[{"frets":[-1,2,4,4,3,2],"label":"Open / common"},{"frets":[7,9,9,7,7,7],"label":"E-shape barre · 7fr"}],"maj7":[{"frets":[-1,2,4,3,4,2],"label":"Open / common"},{"frets":[7,9,8,8,7,7],"label":"E-shape barre · 7fr"}],"m7":[{"frets":[-1,2,4,2,3,2],"label":"Open / common"},{"frets":[7,9,7,7,7,7],"label":"E-shape barre · 7fr"}]}};
+
+const TYPES=[['maj','Major'],['min','Minor'],['7','Dom 7'],['maj7','Maj 7'],['m7','Min 7']];
+const TYPESUFFIX={'maj':'','min':'m','7':'7','maj7':'maj7','m7':'m7'};
+const FORMULA={'maj':[0,4,7],'min':[0,3,7],'7':[0,4,7,10],'maj7':[0,4,7,11],'m7':[0,3,7,10]};
+let curRoot='C',curType=null;
+
+function buildChordControls(){
+  const r=document.getElementById('chordRoots');
+  ROOTS.forEach(n=>{const b=document.createElement('button');b.className='chip'+(n===curRoot?' on':'');b.textContent=n;
+    b.onclick=()=>{curRoot=n;[...r.children].forEach(c=>c.classList.remove('on'));b.classList.add('on');renderChords()};r.appendChild(b);});
+  const t=document.getElementById('chordTypes');
+  const all=document.createElement('button');all.className='chip on';all.textContent='All types';
+  all.onclick=()=>{curType=null;[...t.children].forEach(c=>c.classList.remove('on'));all.classList.add('on');renderChords()};t.appendChild(all);
+  TYPES.forEach(([k,lbl])=>{const b=document.createElement('button');b.className='chip';b.textContent=lbl;
+    b.onclick=()=>{curType=k;[...t.children].forEach(c=>c.classList.remove('on'));b.classList.add('on');renderChords()};t.appendChild(b);});
+}
+function chordNotes(root,type){const base=idx[root];return FORMULA[type].map(s=>NOTES_S[(base+s)%12]);}
+
+function diagSVG(frets){
+  const W=150,H=160,padL=26,padR=14,padT=24,padB=14,cols=6,rows=5;
+  const used=frets.filter(f=>f>0);
+  const minF=used.length?Math.min(...used):1;
+  const maxF=used.length?Math.max(...used):1;
+  const startFret=(minF>1&&maxF>4)?minF:1;
+  const stepX=(W-padL-padR)/(cols-1);
+  const stepY=(H-padT-padB)/rows;
+  let s='<svg class="diag" viewBox="0 0 '+W+' '+H+'">';
+  if(startFret===1){s+='<rect x="'+(padL-2)+'" y="'+(padT-3)+'" width="'+(stepX*5+4)+'" height="4" fill="#2b1d12"/>';}
+  // fret-number labels down the left
+  for(let f=0;f<rows;f++){const fn=startFret+f;const y=padT+(f+0.5)*stepY;
+    s+='<text x="'+(padL-9)+'" y="'+(y+3)+'" font-family="JetBrains Mono" font-size="8.5" fill="#b5632a" text-anchor="end">'+fn+'</text>';}
+  for(let f=0;f<=rows;f++){const y=padT+f*stepY;s+='<line x1="'+padL+'" y1="'+y+'" x2="'+(padL+stepX*5)+'" y2="'+y+'" stroke="#3d2817" stroke-width="1" opacity=".5"/>';}
+  for(let c=0;c<cols;c++){const x=padL+c*stepX;s+='<line x1="'+x+'" y1="'+padT+'" x2="'+x+'" y2="'+(padT+stepY*rows)+'" stroke="#3d2817" stroke-width="1" opacity=".5"/>';}
+  frets.forEach((f,c)=>{const x=padL+c*stepX;
+    if(f===-1)s+='<text x="'+x+'" y="'+(padT-7)+'" font-family="JetBrains Mono" font-size="11" fill="#b5632a" text-anchor="middle">&#215;</text>';
+    else if(f===0)s+='<text x="'+x+'" y="'+(padT-7)+'" font-family="JetBrains Mono" font-size="10" fill="#3d2817" text-anchor="middle">&#9675;</text>';});
+  // barre: lowest fretted value held across 2+ strings with nothing lower between them
+  if(used.length){const bf=minF;const cols2=frets.map((f,c)=>({f,c})).filter(o=>o.f===bf);
+    if(cols2.length>=2){const first=cols2[0].c,last=cols2[cols2.length-1].c;
+      let lower=false;for(let c=first;c<=last;c++){if(frets[c]>0&&frets[c]<bf)lower=true;}
+      if(!lower){const rel=bf-startFret+1;if(rel>=1&&rel<=rows){
+        const x1=padL+first*stepX,x2=padL+last*stepX,y=padT+(rel-0.5)*stepY;
+        s+='<rect x="'+(x1-7)+'" y="'+(y-7)+'" width="'+(x2-x1+14)+'" height="14" rx="7" fill="#b5632a" opacity=".92"/>';}}}}
+  frets.forEach((f,c)=>{if(f>0){const rel=f-startFret+1;if(rel<1||rel>rows)return;
+    const x=padL+c*stepX;const y=padT+(rel-0.5)*stepY;
+    s+='<circle cx="'+x+'" cy="'+y+'" r="8.5" fill="#e0892f"/><text x="'+x+'" y="'+(y+3.5)+'" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#2b1d12" text-anchor="middle">'+f+'</text>';}});
+  s+='</svg>';return s;
+}
+function card(root,type,voicing,i){
+  const name=root+TYPESUFFIX[type];
+  const lbl=TYPES.find(t=>t[0]===type)[1];
+  const notes=chordNotes(root,type).join(' &middot; ');
+  return '<div class="card"><h3>'+name+'<small>'+lbl+'</small></h3><div class="vlabel">Pos '+(i+1)+' &mdash; '+voicing.label+'</div>'+diagSVG(voicing.frets)+'<div class="notes">'+notes+'</div></div>';
+}
+function renderChords(){
+  const g=document.getElementById('chordGrid');
+  const types=curType?[curType]:TYPES.map(t=>t[0]);
+  let html='';
+  types.forEach(t=>{(CHORD_LIB[curRoot][t]||[]).forEach((v,i)=>{html+=card(curRoot,t,v,i);});});
+  g.innerHTML=html;
+}
+
+/* SCALES */
+const SCALES={major:[0,2,4,5,7,9,11],naturalMinor:[0,2,3,5,7,8,10],majorPent:[0,2,4,7,9],minorPent:[0,3,5,7,10]};
+const SCALE_LABEL={major:'Major',naturalMinor:'Natural Minor',majorPent:'Major Pentatonic',minorPent:'Minor Pentatonic'};
+const DEGREE={major:['1','2','3','4','5','6','7'],naturalMinor:['1','2','&flat;3','4','5','&flat;6','&flat;7'],majorPent:['1','2','3','5','6'],minorPent:['1','&flat;3','4','5','&flat;7']};
+/* SCALES — all positions stacked */
+function positionWindows(root){
+  const base=idx[root];
+  // lowest root on the low-E string within frets 0..11
+  let r0=0;for(let f=0;f<=11;f++){if((TUNING[0]+f)%12===base){r0=f;break;}}
+  // five CAGED-style boxes climbing from there
+  const starts=[r0,r0+2,r0+4,r0+5,r0+7];
+  const wins=starts.map(s=>({lo:Math.max(0,s-1),hi:s+3}));
+  wins.sort((a,b)=>a.lo-b.lo); // nearest the nut first
+  return wins.map((w,i)=>({pos:i+1,lo:w.lo,hi:w.hi}));
+}
+function buildScaleControls(){
+  const sr=document.getElementById('scaleRoot');
+  ROOTS.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sr.appendChild(o);});
+  sr.value='A';document.getElementById('scaleType').value='minorPent';
+  sr.onchange=renderScale;document.getElementById('scaleType').onchange=renderScale;
+}
+function boardHTML(set,base,root,lo,hi,fretsMax){
+  const strNames=['E','B','G','D','A','E'];const order=[5,4,3,2,1,0];
+  let html='<table class="fb"><thead><tr><th></th>';
+  for(let f=0;f<=fretsMax;f++)html+='<th>'+f+'</th>';
+  html+='</tr></thead><tbody>';
+  order.forEach((si,row)=>{
+    html+='<tr><td class="strlabel">'+strNames[row]+'</td>';
+    for(let f=0;f<=fretsMax;f++){
+      const note=(TUNING[si]+f)%12;const inscale=set.includes(note);const isRoot=note===base;
+      const inwin=(lo<0)||((f>=lo&&f<=hi)||(f===0&&lo<=0));
+      const markers=[3,5,7,9,15].includes(f)?'&bull;':(f===12?'&bull;&bull;':'');
+      let cell='<td><div class="fret '+(f===0?'nut':'')+'">';
+      if(row===order.length-1&&markers)cell+='<span class="marker">'+markers+'</span>';
+      cell+='<div class="strline"></div>';
+      if(inscale&&inwin)cell+='<div class="dot '+(isRoot?'root':'note')+'">'+(isRoot?root:NOTES_S[note])+'</div>';
+      cell+='</div></td>';html+=cell;
+    }
+    html+='</tr>';
+  });
+  return html+'</tbody></table>';
+}
+function renderScale(){
+  const root=document.getElementById('scaleRoot').value;
+  const type=document.getElementById('scaleType').value;
+  const base=idx[root];
+  const set=SCALES[type].map(s=>(base+s)%12);
+  const wins=positionWindows(root);
+  const host=document.getElementById('fretboard');
+  let out='';
+  // 1) whole neck
+  out+='<div class="boardblock"><div class="boardhd">Whole neck</div>'+
+       '<div class="fbwrap">'+boardHTML(set,base,root,-1,99,15)+'</div></div>';
+  // 2) each position, nearest nut first
+  wins.forEach(w=>{
+    out+='<div class="boardblock"><div class="boardhd">Position '+w.pos+
+         ' <span>frets '+w.lo+'&ndash;'+w.hi+'</span></div>'+
+         '<div class="fbwrap">'+boardHTML(set,base,root,w.lo,w.hi,15)+'</div></div>';
+  });
+  host.innerHTML=out;
+  const useFlat=['F','Bb','Eb','Ab','Db','Gb'].includes(root)||root.indexOf('b')>0;
+  const tbl=useFlat?NOTES_F:NOTES_S;
+  const noteNames=SCALES[type].map(s=>tbl[(base+s)%12]);
+  document.getElementById('scaleInfo').innerHTML=
+    '<div class="pill"><b>Scale:</b> '+root+' '+SCALE_LABEL[type]+'</div>'+
+    '<div class="pill"><b>Notes:</b> '+noteNames.join(' &ndash; ')+'</div>'+
+    '<div class="pill"><b>Degrees:</b> '+DEGREE[type].join(' ')+'</div>'+
+    '<div class="pill"><b>Positions:</b> '+wins.length+' &mdash; ordered from the nut</div>';
+}
+
+/* TRANSPOSE - click builder */
+const KEYS=['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
+const FLAT_KEYS=['F','Bb','Eb','Ab','Db','Gb','C'];
+let prog=[]; // array of chord strings like 'C','Am','G7'
+function buildKeyControls(){
+  const fk=document.getElementById('fromKey'),tk=document.getElementById('toKey');
+  KEYS.forEach(k=>{fk.appendChild(new Option(k,k));tk.appendChild(new Option(k,k));});
+  fk.value='D';tk.value='C';
+  [fk,tk,document.getElementById('accidental')].forEach(el=>{el.addEventListener('change',doTranspose);});
+  document.getElementById('undoBtn').onclick=()=>{prog.pop();renderBuilder();doTranspose();};
+  document.getElementById('clearBtn').onclick=()=>{prog=[];renderBuilder();doTranspose();};
+  buildPalette();renderBuilder();
+}
+function buildPalette(){
+  const p=document.getElementById('palette');
+  const rows=[['Major','',ROOTS],['Minor','m',ROOTS],['Dom 7','7',ROOTS],['Min 7','m7',ROOTS]];
+  let html='';
+  rows.forEach(([lbl,suf,list])=>{
+    html+='<div class="row"><span class="rl">'+lbl+'</span>';
+    list.forEach(r=>{const name=r+suf;html+='<button class="pchip" data-ch="'+name+'">'+name+'</button>';});
+    html+='</div>';
+  });
+  p.innerHTML=html;
+  p.querySelectorAll('.pchip').forEach(b=>{b.onclick=()=>{prog.push(b.dataset.ch);renderBuilder();doTranspose();};});
+}
+function renderBuilder(){
+  const b=document.getElementById('builder');
+  b.innerHTML=prog.map((c,i)=>'<span class="seq">'+c+'<button data-i="'+i+'">&times;</button></span>').join('');
+  b.querySelectorAll('button').forEach(btn=>{btn.onclick=()=>{prog.splice(+btn.dataset.i,1);renderBuilder();doTranspose();};});
+}
+const CHORD_RE=/^([A-G])([#b]?)(.*)$/;
+function transposeChord(tok,shift,useFlat){
+  return tok.split('/').map(p=>{const m=p.match(CHORD_RE);if(!m)return p;let root=m[1]+m[2];const suf=m[3];
+    if(!(root in idx))return p;const n=(idx[root]+shift+1200)%12;return (useFlat?NOTES_F:NOTES_S)[n]+suf;}).join('/');
+}
+function doTranspose(){
+  const from=document.getElementById('fromKey').value,to=document.getElementById('toKey').value;
+  const acc=document.getElementById('accidental').value;
+  const shift=(idx[to]-idx[from]+12)%12;
+  const useFlat=acc==='flat'?true:acc==='sharp'?false:FLAT_KEYS.includes(to);
+  const out=document.getElementById('tpOut');
+  const capoEl=document.getElementById('tpCapo');
+  // capo depends only on the two keys — show it always, even before any chords are added.
+  // A capo only raises pitch. Fret = (from - to) mod 12. Place capo there, finger the
+  // To-key shapes, and it sounds in the original (From) key.
+  const fret=((idx[from]-idx[to])+12)%12;
+  if(shift===0){
+    capoEl.innerHTML='<span class="caphd">Capo &mdash; '+from+' \u2192 '+to+'</span> Same key, so no capo needed.';
+  }else if(fret>=1&&fret<=7){
+    capoEl.innerHTML='<span class="caphd">Capo fret '+fret+'</span>'+
+      'Put the capo on fret '+fret+' and play the <b>'+to+'</b> shapes &mdash; it will sound in <b>'+from+'</b>, the original key.';
+  }else{
+    const altFret=((idx[to]-idx[from])+12)%12;
+    capoEl.innerHTML='<span class="caphd">Capo &mdash; '+from+' \u2192 '+to+'</span> A capo only raises pitch, so there\u2019s no low capo for this drop directly. If you instead keep the original <b>'+from+'</b> shapes, a capo on fret '+altFret+' makes them sound in <b>'+to+'</b>.';
+  }
+  if(!prog.length){out.innerHTML='<span style="color:var(--rosewood);font-family:Inter;font-size:14px">Add chords on the left to see them transposed here.</span>';
+    document.getElementById('tpSemi').textContent='';return;}
+  out.innerHTML=prog.map(c=>'<span class="ch">'+transposeChord(c,shift,useFlat)+'</span>').join('');
+  const semis=shift===0?0:(shift<=6?shift:shift-12);
+  document.getElementById('tpSemi').textContent=shift===0?('No change — '+from+' to '+to+' is the same key.')
+    :'Shifted '+Math.abs(semis)+' semitone'+(Math.abs(semis)>1?'s':'')+' '+(semis>0?'up':'down')+' ('+from+' \u2192 '+to+'). Shown as '+(useFlat?'flats':'sharps')+'.';
+}
+
+document.querySelectorAll('nav button').forEach(b=>{b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById(b.dataset.v).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});};});
+
+buildChordControls();renderChords();
+buildScaleControls();renderScale();
+buildKeyControls();doTranspose();
+</script>
+</body>
+</html>
