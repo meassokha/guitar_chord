@@ -120,6 +120,7 @@
     <nav>
       <button class="on" data-v="chords">Chords</button>
       <button data-v="scales">Scales</button>
+      <button data-v="family">Chord Family</button>
       <button data-v="transpose">Key Tool</button>
     </nav>
   </div>
@@ -157,6 +158,21 @@
     </div>
     <div id="fretboard"></div>
     <div class="scaleinfo" id="scaleInfo"></div>
+  </section>
+
+  <section class="view" id="family">
+    <div class="eyebrow">Diatonic chords</div>
+    <h2 class="sec">The chord family of a key</h2>
+    <p class="sub">Pick a key and see the seven chords built from its own notes &mdash; the ones that sound &ldquo;in key&rdquo; together. Roman numerals show each chord's role: uppercase = major, lowercase = minor, <b>&deg;</b> = diminished.</p>
+    <div class="picker">
+      <span class="label">Root</span><select id="familyRoot"></select>
+      <span class="label" style="margin-left:10px">Scale</span>
+      <select id="familyType">
+        <option value="major">Major</option>
+        <option value="naturalMinor">Natural Minor</option>
+      </select>
+    </div>
+    <div class="grid" id="familyGrid"></div>
   </section>
 
   <section class="view" id="transpose">
@@ -201,7 +217,7 @@ const CHORD_LIB={"C":{"7":[{"frets":[8,10,8,9,8,8],"label":"E-shape barre · 8fr
 
 const TYPES=[['maj','Major'],['min','Minor'],['7','Dom 7'],['maj7','Maj 7'],['m7','Min 7']];
 const TYPESUFFIX={'maj':'','min':'m','7':'7','maj7':'maj7','m7':'m7'};
-const FORMULA={'maj':[0,4,7],'min':[0,3,7],'7':[0,4,7,10],'maj7':[0,4,7,11],'m7':[0,3,7,10]};
+const FORMULA={'maj':[0,4,7],'min':[0,3,7],'7':[0,4,7,10],'maj7':[0,4,7,11],'m7':[0,3,7,10],'dim':[0,3,6]};
 let curRoot='C',curType=null;
 
 function buildChordControls(){
@@ -330,6 +346,39 @@ function renderScale(){
     '<div class="pill"><b>Positions:</b> '+wins.length+' &mdash; ordered from the nut</div>';
 }
 
+/* CHORD FAMILY */
+const FAMILY_QUALITY={major:['maj','min','min','maj','maj','min','dim'],naturalMinor:['min','dim','maj','min','min','maj','maj']};
+const FAMILY_NUM={major:['I','ii','iii','IV','V','vi','vii&deg;'],naturalMinor:['i','ii&deg;','III','iv','v','VI','VII']};
+const QUALITY_LABEL={maj:'Major',min:'Minor',dim:'Diminished'};
+const SUFFIX_MAP={maj:'',min:'m',dim:'dim'};
+function familyCard(numeral,root,quality){
+  const name=root+SUFFIX_MAP[quality];
+  const notes=chordNotes(root,quality).join(' &middot; ');
+  const voicing=(CHORD_LIB[root]&&CHORD_LIB[root][quality]&&CHORD_LIB[root][quality][0])||null;
+  const body=voicing
+    ?('<div class="vlabel">'+voicing.label+'</div>'+diagSVG(voicing.frets))
+    :('<div class="vlabel">No stock open/barre shape</div><div style="height:120px;display:flex;align-items:center;justify-content:center;color:var(--rosewood);font-family:\'JetBrains Mono\',monospace;font-size:11px;text-align:center;padding:0 8px">Play '+root+' minor, flatten the 5th</div>');
+  return '<div class="card"><h3>'+name+'<small>'+numeral+'</small></h3><div class="vlabel">'+QUALITY_LABEL[quality]+'</div>'+body+'<div class="notes">'+notes+'</div></div>';
+}
+function renderFamily(){
+  const root=document.getElementById('familyRoot').value;
+  const type=document.getElementById('familyType').value;
+  const base=idx[root];
+  const scale=SCALES[type];
+  const quality=FAMILY_QUALITY[type];
+  const num=FAMILY_NUM[type];
+  let html='';
+  scale.forEach((s,i)=>{const rootNote=ROOTS[(base+s)%12];html+=familyCard(num[i],rootNote,quality[i]);});
+  document.getElementById('familyGrid').innerHTML=html;
+}
+function buildFamilyControls(){
+  const fr=document.getElementById('familyRoot');
+  ROOTS.forEach(n=>{fr.appendChild(new Option(n,n));});
+  fr.value='C';
+  fr.onchange=renderFamily;
+  document.getElementById('familyType').onchange=renderFamily;
+}
+
 /* TRANSPOSE - click builder */
 const KEYS=['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
 const FLAT_KEYS=['F','Bb','Eb','Ab','Db','Gb','C'];
@@ -400,6 +449,7 @@ document.querySelectorAll('nav button').forEach(b=>{b.onclick=()=>{
 
 buildChordControls();renderChords();
 buildScaleControls();renderScale();
+buildFamilyControls();renderFamily();
 buildKeyControls();doTranspose();
 </script>
 </body>
