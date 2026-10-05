@@ -28,6 +28,18 @@
   nav button{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
     background:transparent;border:1px solid transparent;color:var(--string);padding:8px 14px;border-radius:7px;cursor:pointer;transition:.18s;}
   nav button:hover{color:var(--amber-bright)}
+  .burger{display:none;background:transparent;border:1px solid var(--brass);border-radius:8px;width:42px;height:38px;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:0}
+  .burger span{display:block;width:20px;height:2px;background:var(--brass);transition:.2s}
+  .burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .burger.open span:nth-child(2){opacity:0}
+  .burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  @media(max-width:720px){
+    .bar{flex-wrap:wrap;padding:12px 16px}
+    .burger{display:flex}
+    nav{display:none;width:100%;flex-direction:column;gap:6px;padding-top:6px}
+    nav.open{display:flex}
+    nav button{text-align:left;padding:12px 14px}
+  }
   nav button.on{background:var(--amber);color:var(--wood);border-color:var(--amber-bright)}
   main{max-width:1080px;margin:0 auto;padding:0 24px 90px}
   .hero{padding:54px 0 30px;border-bottom:1px solid var(--line);position:relative}
@@ -135,7 +147,8 @@
 <header>
   <div class="bar">
     <div class="brand"><b>Fret<em>&middot;</em>work</b><span>chords &middot; scales &middot; keys</span></div>
-    <nav>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav id="mainNav">
       <button class="on" data-v="chords">Chords</button>
       <button data-v="scales">Scales</button>
       <button data-v="family">Chord Family</button>
@@ -506,7 +519,7 @@ function gChips(){
   G.sel=new Set([items[0][0]]);
   host.innerHTML='<span class="label">Include</span>';
   items.forEach(([k,t])=>{const b=document.createElement('button');b.className='toolbtn'+(G.sel.has(k)?' on':'');b.textContent=t;
-    b.onclick=()=>{if(G.sel.has(k)){if(G.sel.size>1){G.sel.delete(k);b.classList.remove('on');}}else{G.sel.add(k);b.classList.add('on');}gPreview();};
+    b.onclick=()=>{if(G.sel.has(k)){G.sel.delete(k);b.classList.remove('on');}else{G.sel.add(k);b.classList.add('on');}gPreview();};
     host.appendChild(b);});
   gPreview();
 }
@@ -556,6 +569,7 @@ function gStart(){
   const tbl=(['F','Bb','Eb','Ab','Db','Gb'].includes(root))?NOTES_F:NOTES_S;
   G.names=G.set.map(n=>tbl[n]);
   G.q=0;G.score=0;G.streak=0;G.pool=gPool();
+  if(!G.pool.length){document.getElementById('gMsg').textContent='Select at least one '+(G.mode==='string'?'string':'position')+' first.';return;}
   document.getElementById('gBoard').style.display='block';
   gNext();
 }
@@ -600,8 +614,11 @@ function gEnd(){
   gChips();gScoreHTML();
 })();
 
-document.querySelectorAll('nav button').forEach(b=>{b.onclick=()=>{
-  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+const burger=document.getElementById('burger'),mainNav=document.getElementById('mainNav');
+burger.onclick=()=>{const o=mainNav.classList.toggle('open');burger.classList.toggle('open',o);burger.setAttribute('aria-expanded',o);};
+mainNav.querySelectorAll('button').forEach(b=>{b.onclick=()=>{
+  mainNav.classList.remove('open');burger.classList.remove('open');
+  mainNav.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
   document.getElementById(b.dataset.v).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});};});
 
