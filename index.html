@@ -65,9 +65,11 @@
   .boardblock{margin-bottom:26px}
   .boardhd{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:var(--rosewood);margin-bottom:10px;display:flex;align-items:baseline;gap:10px}
   .boardhd span{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--copper);letter-spacing:.04em}
-  table.fb{border-collapse:collapse;width:100%;min-width:640px}
+  table.fb{border-collapse:collapse;width:100%;min-width:640px;table-layout:fixed}
+  table.fb th:first-child,table.fb td.strlabel{width:46px}
   table.fb td,table.fb th{text-align:center;position:relative}
   table.fb th{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--brass);padding-bottom:8px;font-weight:700}
+  table.fb tfoot th{padding:8px 0 0}
   .strlabel{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--string);font-weight:700;padding-right:12px;text-align:right!important;width:34px}
   .fret{height:46px;border-left:2px solid #6b4a2c;background:linear-gradient(180deg,#4a3220,#3d2817)}
   .fret.nut{border-left:6px solid var(--string)}
@@ -316,7 +318,9 @@ function boardHTML(set,base,root,lo,hi,fretsMax){
     }
     html+='</tr>';
   });
-  return html+'</tbody></table>';
+  html+='</tbody><tfoot><tr><th></th>';
+  for(let f=0;f<=fretsMax;f++)html+='<th>'+f+'</th>';
+  return html+'</tr></tfoot></table>';
 }
 function renderScale(){
   const root=document.getElementById('scaleRoot').value;
@@ -339,8 +343,13 @@ function renderScale(){
   const useFlat=['F','Bb','Eb','Ab','Db','Gb'].includes(root)||root.indexOf('b')>0;
   const tbl=useFlat?NOTES_F:NOTES_S;
   const noteNames=SCALES[type].map(s=>tbl[(base+s)%12]);
+  const isMinor=(type==='naturalMinor'||type==='minorPent');
+  const relTbl=root.indexOf('#')>0?NOTES_S:NOTES_F;
+  const isPent=type.indexOf('Pent')>0;
+  const relFamily=relTbl[(base+(isMinor?3:9))%12]+(isMinor?' Major':' Minor')+(isPent?' Pentatonic':'');
   document.getElementById('scaleInfo').innerHTML=
     '<div class="pill"><b>Scale:</b> '+root+' '+SCALE_LABEL[type]+'</div>'+
+    '<div class="pill"><b>Equivalent:</b> '+root+(isMinor?'m':'')+(isPent?' Pentatonic':'')+' = '+relFamily+' (same notes)</div>'+
     '<div class="pill"><b>Notes:</b> '+noteNames.join(' &ndash; ')+'</div>'+
     '<div class="pill"><b>Degrees:</b> '+DEGREE[type].join(' ')+'</div>'+
     '<div class="pill"><b>Positions:</b> '+wins.length+' &mdash; ordered from the nut</div>';
