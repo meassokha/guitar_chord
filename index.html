@@ -112,6 +112,22 @@
   .capo b{color:var(--copper)}
   .capo .caphd{display:block;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;letter-spacing:-.01em;
     color:var(--copper);margin-bottom:5px;text-transform:none}
+  .toolbtn.on{background:var(--copper);color:var(--cream)}
+  #gStart{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;background:var(--wood);color:var(--amber-bright);border:2px solid var(--amber-bright);padding:11px 24px;border-radius:10px;cursor:pointer;margin-top:6px}
+  #gStart:hover{background:var(--amber-bright);color:var(--wood)}
+  .gscore{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 14px}
+  .gq{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:var(--rosewood);margin:16px 0 10px}
+  .gans{display:flex;flex-wrap:wrap;gap:8px}
+  .gans button{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;min-width:56px;padding:12px 14px;border-radius:10px;border:1px solid var(--copper);background:var(--parch);color:var(--rosewood);cursor:pointer}
+  .gans button:hover:not(:disabled){background:var(--copper);color:var(--cream)}
+  .gans button.ok{background:#3f8f4f;border-color:#3f8f4f;color:#fff}
+  .gans button.bad{background:#b3402f;border-color:#b3402f;color:#fff}
+  .gmsg{margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--rosewood);min-height:20px}
+  .dot.q{background:var(--amber-bright);color:var(--wood);animation:gp 1s ease-in-out infinite}
+  .dot.q.ok{background:#3f8f4f;color:#fff;animation:none}
+  .dot.q.bad{background:#b3402f;color:#fff;animation:none}
+  @keyframes gp{50%{transform:scale(1.18);box-shadow:0 0 0 6px rgba(245,167,66,.35)}}
+  .fret.gwin{background:linear-gradient(180deg,#6a4a30,#583a24)}
   footer{border-top:1px solid var(--line);margin-top:60px;padding-top:24px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--rosewood);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 </style>
 </head>
@@ -124,6 +140,7 @@
       <button data-v="scales">Scales</button>
       <button data-v="family">Chord Family</button>
       <button data-v="transpose">Key Tool</button>
+      <button data-v="game">Remember Game</button>
     </nav>
   </div>
 </header>
@@ -203,6 +220,34 @@
         <div class="semi" id="tpSemi"></div>
       </div>
     </div>
+  </section>
+
+  <section class="view" id="game">
+    <div class="eyebrow">Remember game</div>
+    <h2 class="sec">Name the note on the fret</h2>
+    <p class="sub">Pick a scale and what to drill &mdash; certain strings, or certain scale positions. A random note of the scale flashes on the neck; tap its name. 10 questions per round.</p>
+    <div class="picker">
+      <span class="label">Root</span><select id="gRoot"></select>
+      <span class="label" style="margin-left:10px">Scale</span>
+      <select id="gType">
+        <option value="major">Major (Ionian)</option>
+        <option value="naturalMinor">Natural Minor (Aeolian)</option>
+        <option value="majorPent">Major Pentatonic</option>
+        <option value="minorPent">Minor Pentatonic</option>
+      </select>
+    </div>
+    <div class="picker">
+      <span class="label">Drill by</span>
+      <button class="toolbtn gmode on" data-m="string">String</button>
+      <button class="toolbtn gmode" data-m="pos">Scale position</button>
+    </div>
+    <div class="picker" id="gChips"></div>
+    <div class="picker"><button id="gStart">&#9654; Start round</button></div>
+    <div class="gscore" id="gScore"></div>
+    <div class="fbwrap" id="gBoard" style="display:none"></div>
+    <div class="gq" id="gQ"></div>
+    <div class="gans" id="gAns"></div>
+    <div class="gmsg" id="gMsg"></div>
   </section>
 
   <footer><span>FRETWORK &mdash; a practice-room tool</span><span>Standard tuning E A D G B E</span></footer>
@@ -450,6 +495,110 @@ function doTranspose(){
   document.getElementById('tpSemi').textContent=shift===0?('No change — '+from+' to '+to+' is the same key.')
     :'Shifted '+Math.abs(semis)+' semitone'+(Math.abs(semis)>1?'s':'')+' '+(semis>0?'up':'down')+' ('+from+' \u2192 '+to+'). Shown as '+(useFlat?'flats':'sharps')+'.';
 }
+
+/* REMEMBER GAME */
+const G={mode:'string',sel:new Set([0,1,2,3,4,5]),q:0,score:0,streak:0,cur:null,names:[],set:[],best:0,locked:true};
+try{G.best=+localStorage.getItem('fwBest')||0;}catch(e){}
+function gStrLabel(si){return ['6 (low E)','5 (A)','4 (D)','3 (G)','2 (B)','1 (high E)'][si];}
+function gChips(){
+  const host=document.getElementById('gChips');host.innerHTML='';
+  const items=G.mode==='string'?[0,1,2,3,4,5].map(i=>[i,'String '+gStrLabel(i)]):[1,2,3,4,5].map(i=>[i,'Position '+i]);
+  G.sel=new Set([items[0][0]]);
+  host.innerHTML='<span class="label">Include</span>';
+  items.forEach(([k,t])=>{const b=document.createElement('button');b.className='toolbtn'+(G.sel.has(k)?' on':'');b.textContent=t;
+    b.onclick=()=>{if(G.sel.has(k)){if(G.sel.size>1){G.sel.delete(k);b.classList.remove('on');}}else{G.sel.add(k);b.classList.add('on');}gPreview();};
+    host.appendChild(b);});
+  gPreview();
+}
+function gScoreHTML(){
+  document.getElementById('gScore').innerHTML=
+    '<div class="pill"><b>Question:</b> '+Math.min(G.q,10)+'/10</div><div class="pill"><b>Score:</b> '+G.score+'</div>'+
+    '<div class="pill"><b>Streak:</b> '+G.streak+'</div><div class="pill"><b>Best round:</b> '+G.best+'/10</div>';
+}
+function gHL(){
+  const root=document.getElementById('gRoot').value;
+  return G.mode==='string'?{strs:G.sel}:{wins:positionWindows(root).filter(w=>G.sel.has(w.pos))};
+}
+function gPreview(){
+  const b=document.getElementById('gBoard');b.style.display='block';
+  b.innerHTML=gBoardHTML(null,null,'',gHL());
+}
+function gBoardHTML(target,win,state,hl){
+  hl=hl||gHL();
+  const strNames=['E','B','G','D','A','E'];let html='<table class="fb"><thead><tr><th></th>';
+  for(let f=0;f<=15;f++)html+='<th>'+f+'</th>';html+='</tr></thead><tbody>';
+  [5,4,3,2,1,0].forEach((si,row)=>{
+    html+='<tr><td class="strlabel">'+strNames[row]+'</td>';
+    for(let f=0;f<=15;f++){
+      const inwin=hl.strs?hl.strs.has(si):hl.wins.some(w=>(f>=w.lo&&f<=w.hi)||(f===0&&w.lo<=0));
+      html+='<td><div class="fret '+(f===0?'nut ':'')+(inwin?'gwin':'')+'"><div class="strline"></div>';
+      if(target&&target.si===si&&target.f===f)html+='<div class="dot q '+(state||'')+'">'+(state?G.names[G.set.indexOf(target.note)]:'?')+'</div>';
+      html+='</div></td>';
+    }
+    html+='</tr>';
+  });
+  return html+'</tbody></table>';
+}
+function gPool(){
+  const root=document.getElementById('gRoot').value;const base=idx[root];
+  const pool=[];
+  const wins=positionWindows(root);
+  [0,1,2,3,4,5].forEach(si=>{for(let f=0;f<=15;f++){
+    const note=(TUNING[si]+f)%12;if(!G.set.includes(note))continue;
+    if(G.mode==='string'){if(G.sel.has(si))pool.push({si,f,note});}
+    else{wins.forEach(w=>{if(G.sel.has(w.pos)&&((f>=w.lo&&f<=w.hi)||(f===0&&w.lo<=0)))pool.push({si,f,note,w});});}
+  }});
+  return pool;
+}
+function gStart(){
+  const root=document.getElementById('gRoot').value,type=document.getElementById('gType').value,base=idx[root];
+  G.set=SCALES[type].map(s=>(base+s)%12);
+  const tbl=(['F','Bb','Eb','Ab','Db','Gb'].includes(root))?NOTES_F:NOTES_S;
+  G.names=G.set.map(n=>tbl[n]);
+  G.q=0;G.score=0;G.streak=0;G.pool=gPool();
+  document.getElementById('gBoard').style.display='block';
+  gNext();
+}
+function gNext(){
+  if(G.q>=10){return gEnd();}
+  G.q++;G.locked=false;
+  G.cur=G.pool[Math.floor(Math.random()*G.pool.length)];
+  document.getElementById('gBoard').innerHTML=gBoardHTML(G.cur);
+  document.getElementById('gQ').textContent='What note is flashing on string '+gStrLabel(G.cur.si).split(' ')[0]+', fret '+G.cur.f+'?';
+  const ans=document.getElementById('gAns');ans.innerHTML='';
+  G.names.forEach((n,i)=>{const b=document.createElement('button');b.textContent=n;b.onclick=()=>gPick(i,b);ans.appendChild(b);});
+  document.getElementById('gMsg').textContent='';gScoreHTML();
+}
+function gPick(i,btn){
+  if(G.locked)return;G.locked=true;
+  const right=G.set[i]===G.cur.note;
+  const btns=[...document.querySelectorAll('#gAns button')];
+  btns.forEach(b=>b.disabled=true);
+  if(right){G.score++;G.streak++;btn.classList.add('ok');}
+  else{G.streak=0;btn.classList.add('bad');btns[G.set.indexOf(G.cur.note)].classList.add('ok');}
+  document.getElementById('gBoard').innerHTML=gBoardHTML(G.cur,null,right?'ok':'bad');
+  document.getElementById('gMsg').innerHTML=(right?'Correct!':'Not quite &mdash; it was '+G.names[G.set.indexOf(G.cur.note)]+'.');
+  gScoreHTML();
+  setTimeout(gNext,right?800:1600);
+}
+function gEnd(){
+  if(G.score>G.best){G.best=G.score;try{localStorage.setItem('fwBest',G.best);}catch(e){}}
+  document.getElementById('gAns').innerHTML='';
+  document.getElementById('gQ').textContent='Round complete: '+G.score+' / 10';
+  document.getElementById('gMsg').textContent=G.score===10?'Perfect! Try another scale or string.':'Press "Start round" to try again.';
+  gScoreHTML();
+}
+(function(){
+  const gr=document.getElementById('gRoot');
+  ROOTS.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;gr.appendChild(o);});
+  gr.value='A';document.getElementById('gType').value='minorPent';
+  document.querySelectorAll('.gmode').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('.gmode').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+    G.mode=b.dataset.m;gChips();});
+  document.getElementById('gStart').onclick=gStart;
+  gr.onchange=gPreview;
+  gChips();gScoreHTML();
+})();
 
 document.querySelectorAll('nav button').forEach(b=>{b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
