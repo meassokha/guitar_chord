@@ -197,7 +197,7 @@
   }
 
   /* glassmorphism: frosted translucent surfaces over a soft gradient backdrop */
-  :root{--glass:rgba(255,255,255,.46);--glass-strong:rgba(255,255,255,.64);--glass-border:rgba(255,255,255,.7);
+  :root{--faint:#574632;--muted:#4f402c;--accent-text:#862f00;--glass:rgba(255,255,255,.56);--glass-strong:rgba(255,255,255,.72);--glass-border:rgba(255,255,255,.7);
     --glass-shadow:0 8px 32px rgba(150,80,20,.14),inset 0 1px 0 rgba(255,255,255,.8)}
   body{background:#fff1dc;background-attachment:fixed;position:relative}
   body::before,body::after{content:'';position:fixed;z-index:-1;border-radius:50%;filter:blur(70px);pointer-events:none}
@@ -221,6 +221,7 @@
   .fret.gwin{background:rgba(245,180,70,.4)}
   .card .notes{border-top-color:rgba(120,70,20,.25)}
   .sub code{background:rgba(255,255,255,.6)}
+  :focus-visible{outline:2px solid #241a10;outline-offset:2px;box-shadow:0 0 0 5px rgba(255,255,255,.85)}
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
     header,nav,.card,.panel,.capo,.fbwrap{background:rgba(255,250,241,.95)}
   }
