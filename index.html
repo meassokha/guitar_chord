@@ -195,6 +195,35 @@
   @media(prefers-reduced-motion:reduce){
     *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
   }
+
+  /* glassmorphism: frosted translucent surfaces over a soft gradient backdrop */
+  :root{--glass:rgba(255,255,255,.46);--glass-strong:rgba(255,255,255,.64);--glass-border:rgba(255,255,255,.7);
+    --glass-shadow:0 8px 32px rgba(150,80,20,.14),inset 0 1px 0 rgba(255,255,255,.8)}
+  body{background:#fff1dc;background-attachment:fixed;position:relative}
+  body::before,body::after{content:'';position:fixed;z-index:-1;border-radius:50%;filter:blur(70px);pointer-events:none}
+  body::before{width:560px;height:560px;top:-120px;right:-80px;background:radial-gradient(circle,#ffb347,#ff8a5c 60%,transparent 72%);opacity:.7}
+  body::after{width:620px;height:620px;bottom:-160px;left:-140px;background:radial-gradient(circle,#ffd38a,#f9a8c9 62%,transparent 74%);opacity:.65}
+  header,nav,.card,.panel,.chip,select,.pill,.capo,.builder,.pchip,.toolbtn,.gans button,.fbwrap,.burger{
+    -webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%)}
+  header{background:var(--glass);border-bottom:1px solid var(--glass-border);box-shadow:0 4px 24px rgba(150,80,20,.08)}
+  nav,.burger{background:var(--glass);border:1px solid var(--glass-border);box-shadow:var(--glass-shadow)}
+  nav button:hover{background:rgba(255,255,255,.55)}
+  .card,.panel{background:var(--glass);border:1px solid var(--glass-border);box-shadow:var(--glass-shadow)}
+  .card:hover{background:var(--glass-strong);box-shadow:0 18px 40px rgba(150,80,20,.2),inset 0 1px 0 #fff;border-color:#fff}
+  .chip,select,.pill,.pchip,.toolbtn,.gans button{background-color:var(--glass);border:1px solid var(--glass-border);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 2px 8px rgba(150,80,20,.08)}
+  .chip.on,.toolbtn.on,.chip.on:hover,.toolbtn.on:hover{background:linear-gradient(135deg,rgba(255,190,90,.95),rgba(245,140,40,.95));border-color:rgba(255,255,255,.6)}
+  .chip:hover,.toolbtn:hover,.pchip:hover{background-color:var(--glass-strong)}
+  .builder{background:rgba(255,255,255,.3);border:1px dashed rgba(120,70,20,.3)}
+  .capo{background:rgba(255,255,255,.5);border:1px solid var(--glass-border);border-left:4px solid var(--amber);box-shadow:var(--glass-shadow)}
+  .seq{background:rgba(255,255,255,.7);border:1px solid var(--glass-border)}
+  .fbwrap{background:rgba(255,236,196,.5);border:1px solid var(--glass-border);box-shadow:var(--glass-shadow)}
+  .fret{background:rgba(255,248,228,.42);border-left-color:rgba(150,100,40,.55)}
+  .fret.gwin{background:rgba(245,180,70,.4)}
+  .card .notes{border-top-color:rgba(120,70,20,.25)}
+  .sub code{background:rgba(255,255,255,.6)}
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    header,nav,.card,.panel,.capo,.fbwrap{background:rgba(255,250,241,.95)}
+  }
 </style>
 </head>
 <body>
